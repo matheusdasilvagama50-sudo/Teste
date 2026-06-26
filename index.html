@@ -2,340 +2,349 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexa Capital Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa Capital | Elite Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg: #030712;
-            --surface: #111827;
-            --surface-light: #1f2937;
-            --primary: #8b5cf6;
-            --secondary: #d946ef;
-            --success: #10b981;
-            --error: #f43f5e;
+            --bg: #020617;
+            --sidebar: #0f172a;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --surface: rgba(30, 41, 59, 0.5);
             --text: #f8fafc;
-            --text-dim: #94a3b8;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
-        * { margin:0; padding:0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
             background: var(--bg); 
             color: var(--text); 
-            line-height: 1.6;
+            display: flex; 
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* HEADER AMPLIADO */
-        header { 
-            padding: 40px 25px 30px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            max-width: 600px; 
-            margin: 0 auto;
-        }
-        .user-info h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
-        .user-info p { font-size: 0.9rem; color: var(--text-dim); }
-
-        .app-container { 
-            padding: 0 25px 120px; 
-            max-width: 600px; 
-            margin: 0 auto; 
-        }
-
-        /* CARD DE SALDO GIGANTE */
-        .main-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 35px;
-            padding: 45px 35px;
-            margin-bottom: 30px;
-            box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.4);
-            position: relative;
-            z-index: 1;
-        }
-        .main-card::after {
-            content: ""; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: url("https://www.transparenttextures.com/patterns/cubes.png");
-            opacity: 0.1; z-index: -1;
-        }
-
-        /* NAVEGAÇÃO SUPERIOR PROFISSIONAL */
-        .nav-tabs {
-            display: flex; 
-            background: var(--surface); 
-            border-radius: 20px; 
-            padding: 8px; 
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .nav-tabs button {
-            flex: 1; border: none; background: transparent; color: var(--text-dim); 
-            padding: 14px; border-radius: 15px; font-weight: 700; font-size: 0.9rem; 
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-tabs button.active { 
-            background: var(--surface-light); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* SEÇÕES */
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: slideUp 0.5s ease; }
-
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(30px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* INPUTS E BOTÕES MAIORES */
-        .input-group { 
-            background: var(--surface); padding: 30px; border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .section-title { font-size: 1.3rem; font-weight: 800; margin: 25px 0 15px; }
-
-        input {
-            width: 100%; background: var(--bg); border: 2px solid var(--surface-light); 
-            padding: 18px; border-radius: 18px; color: white; margin-bottom: 15px; 
-            font-size: 1.1rem; font-weight: 600; outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--primary); }
-
-        .btn-action {
-            width: 100%; padding: 20px; border-radius: 18px; border: none; 
-            font-weight: 800; font-size: 1rem; color: white; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        /* LISTA DE ITENS PROFISSIONAL */
-        .fatura-list { display: flex; flex-direction: column; gap: 15px; }
-        .fatura-item {
-            background: var(--surface); padding: 22px; border-radius: 24px;
-            display: flex; align-items: center; gap: 20px;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-
-        /* NAVBAR INFERIOR PREMIUM */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(25px);
-            display: flex; justify-content: space-around;
-            padding: 20px 10px 35px; border-top: 1px solid rgba(255,255,255,0.08);
+        /* SIDEBAR (ESTILO DESKTOP GIGANTE) */
+        nav.sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            position: fixed;
+            height: 100vh;
             z-index: 100;
         }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; gap: 8px; 
-            color: var(--text-dim); cursor: pointer; transition: 0.3s;
-            flex: 1;
-        }
-        .nav-item.active { color: var(--primary); }
-        .nav-item svg { width: 28px; height: 28px; transition: 0.3s; }
-        .nav-item.active svg { transform: translateY(-5px); }
-        .nav-item span { font-size: 0.75rem; font-weight: 700; }
 
-        /* ÍCONES SVG PERSONALIZADOS */
-        .icon-circle {
-            width: 55px; height: 55px; background: var(--surface-light);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links { list-style: none; flex-grow: 1; }
+        .nav-links li {
+            padding: 16px 20px;
+            margin-bottom: 8px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: 0.3s;
+        }
+
+        .nav-links li.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 10px 20px var(--accent-glow);
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 50px;
+            max-width: 1400px;
+        }
+
+        /* HEADER GIGANTE */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-text h1 { font-size: 2.2rem; font-weight: 800; }
+
+        /* GRID DE ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 35px;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        .stat-card h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+        .stat-card .value { font-size: 2.5rem; font-weight: 800; margin: 15px 0; }
+
+        /* AREA DE GRÁFICO E TRANSAÇÕES */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .chart-container {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            min-height: 400px;
+        }
+
+        .action-panel {
+            background: var(--sidebar);
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid var(--accent);
+        }
+
+        /* ELEMENTOS DE FORMULÁRIO GIGANTES */
+        input {
+            width: 100%;
+            padding: 20px;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+
+        /* LISTA DE TRANSAÇÕES */
+        .history-list { margin-top: 30px; }
+        .transaction {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 10px;
+            border-radius: 15px;
+            align-items: center;
+        }
+
+        /* RESPONSIVIDADE (MOBILE GIGANTE) */
+        @media (max-width: 1024px) {
+            nav.sidebar {
+                width: 100%;
+                height: 80px;
+                bottom: 0;
+                top: auto;
+                flex-direction: row;
+                padding: 10px;
+                border-right: none;
+                border-top: 1px solid var(--card-border);
+            }
+            .sidebar .logo, .sidebar .nav-links li span { display: none; }
+            .nav-links { display: flex; width: 100%; justify-content: space-around; }
+            .nav-links li { margin: 0; }
+            main { margin-left: 0; padding: 20px 20px 100px; }
+            .content-grid { grid-template-columns: 1fr; }
+            .welcome-text h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="user-info">
-            <p>Seja bem-vindo,</p>
-            <h2 id="userName">Usuário Nexa Pro</h2>
+    <!-- NAVEGAÇÃO LATERAL -->
+    <nav class="sidebar">
+        <div class="logo">
+            <svg width="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+            NEXA ELITE
         </div>
-        <div class="icon-circle" style="border-radius: 50%; width: 50px; height: 50px;">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:24px; color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-        </div>
-    </header>
-
-    <div class="app-container">
-        
-        <!-- NAVEGAÇÃO DE TOPO -->
-        <div class="nav-tabs">
-            <button class="tab-btn active" data-target="resumo">Dashboard</button>
-            <button class="tab-btn" data-target="transacoes">Extrato</button>
-            <button class="tab-btn" data-target="faturas">Faturas</button>
-        </div>
-
-        <!-- SEÇÃO: DASHBOARD -->
-        <section id="resumo" class="view-section active">
-            <div class="main-card">
-                <p style="opacity: 0.9; font-size: 1rem; font-weight: 600;">Saldo Disponível</p>
-                <div style="font-size: 3rem; font-weight: 800; margin: 10px 0;">R$ <span id="balanceDisplay">5.250,00</span></div>
-                <div style="background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; backdrop-filter: blur(5px);">
-                    <span style="color: #4ade80;">●</span> Nexa Black Card
-                </div>
-            </div>
-
-            <div class="section-title">Gerenciar Capital</div>
-            <div class="input-group">
-                <input type="text" id="desc" placeholder="Nome da movimentação">
-                <input type="number" id="amt" placeholder="R$ 0,00" step="0.01">
-                <div style="display: flex; gap: 15px;">
-                    <button class="btn-action" style="background: var(--success);" onclick="app.handleAction(true)">
-                        <svg width="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg> Entrar
-                    </button>
-                    <button class="btn-action" style="background: var(--error);" onclick="app.handleAction(false)">
-                        <svg width="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 12H4"></path></svg> Sair
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO: TRANSAÇÕES -->
-        <section id="transacoes" class="view-section">
-            <div class="section-title">Histórico Recente</div>
-            <div id="historyList" class="fatura-list"></div>
-        </section>
-
-        <!-- SEÇÃO: FATURAS -->
-        <section id="faturas" class="view-section">
-            <div class="section-title">Contas a Pagar</div>
-            <div class="fatura-list">
-                <div class="fatura-item">
-                    <div class="icon-circle">⚡</div>
-                    <div style="flex:1"><h3>Energia Elétrica</h3><p style="color:var(--text-dim)">Vence em 05 Mai</p></div>
-                    <div style="color:var(--error); font-weight:800; font-size:1.1rem">R$ 245,00</div>
-                </div>
-                <!-- Mais itens poderiam ser adicionados aqui -->
-            </div>
-        </section>
-    </div>
-
-    <!-- NAVBAR INFERIOR (Sincronizada) -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-target="resumo">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            <span>Início</span>
-        </div>
-        <div class="nav-item" data-target="transacoes">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-            <span>Extrato</span>
-        </div>
-        <div class="nav-item" data-target="faturas">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>Faturas</span>
-        </div>
+        <ul class="nav-links">
+            <li class="active" onclick="switchView('dash')">
+                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Dashboard</span>
+            </li>
+            <li onclick="switchView('wallet')">
+                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 002 2h14v-4"></path><path d="M18 12a2 2 0 00-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
+                <span>Wallet</span>
+            </li>
+            <li onclick="switchView('invest')">
+                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+                <span>Investir</span>
+            </li>
+        </ul>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        <div class="top-bar">
+            <div class="welcome-text">
+                <p style="color: #64748b; font-weight: 600;">Portfólio Management</p>
+                <h1>Olá, Investidor Nexa</h1>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <div style="text-align: right">
+                    <p style="font-weight: 800">Status da Conta</p>
+                    <p style="color: var(--success); font-size: 0.8rem; font-weight: bold">VERIFICADA PREMIUM</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARDS GIGANTES -->
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <h3>Patrimônio Total</h3>
+                <div class="value">R$ <span id="mainBalance">128.450,00</span></div>
+                <p style="font-weight: bold;">↑ 12.5% este mês</p>
+            </div>
+            <div class="stat-card">
+                <h3>Rendimento Semanal</h3>
+                <div class="value" style="color: var(--success)">+ R$ 2.140,00</div>
+                <p>Média de 2.4% ao dia</p>
+            </div>
+            <div class="stat-card">
+                <h3>Ativos em Operação</h3>
+                <div class="value">14</div>
+                <p>3 novas oportunidades</p>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- COLUNA DO GRÁFICO -->
+            <div class="chart-container">
+                <h3 style="margin-bottom: 20px">Performance Analítica</h3>
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- COLUNA DE AÇÃO -->
+            <div class="action-panel">
+                <h3 style="margin-bottom: 25px">Nova Operação</h3>
+                <input type="text" id="opName" placeholder="Título do Ativo/Operação">
+                <input type="number" id="opValue" placeholder="Valor R$">
+                <button class="btn btn-primary" onclick="addOp()">Executar Ordem</button>
+
+                <div class="history-list" id="recentHistory">
+                    <p style="text-align: center; color: #475569; margin-top: 20px;">Processando ordens em tempo real...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script>
-        const app = {
-            saldo: parseFloat(localStorage.getItem('n_saldo')) || 5250.00,
-            historico: JSON.parse(localStorage.getItem('n_history')) || [],
+        // Lógica do Gráfico Profissional
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
-            init() {
-                this.updateDisplay();
-                this.renderHistory();
-                this.setupNavigation();
-                
-                gsap.from(".main-card", { y: 50, opacity: 0, duration: 1, ease: "power4.out" });
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Crescimento de Patrimônio',
+                    data: [100000, 105000, 103000, 115000, 120000, 125000, 128450],
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: '#6366f1',
+                    borderWidth: 4,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
             },
-
-            setupNavigation() {
-                const allNavItems = document.querySelectorAll('.nav-item, .tab-btn');
-                
-                allNavItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        const target = item.getAttribute('data-target');
-                        this.switchTab(target);
-                    });
-                });
-            },
-
-            switchTab(targetId) {
-                // Atualiza Visual das Abas e Nav Inferior
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-item, .tab-btn').forEach(n => n.classList.remove('active'));
-
-                // Ativa os elementos corretos
-                document.getElementById(targetId).classList.add('active');
-                document.querySelectorAll(`[data-target="${targetId}"]`).forEach(n => n.classList.add('active'));
-
-                // Animação de entrada
-                gsap.from(`#${targetId}`, { opacity: 0, y: 20, duration: 0.4 });
-            },
-
-            handleAction(isAdding) {
-                const descInput = document.getElementById('desc');
-                const amtInput = document.getElementById('amt');
-                const desc = descInput.value;
-                const amt = parseFloat(amtInput.value);
-
-                if(!desc || isNaN(amt)) return this.shake();
-
-                this.saldo += isAdding ? amt : -amt;
-                this.historico.unshift({
-                    id: Date.now(),
-                    desc,
-                    amt,
-                    type: isAdding ? 'up' : 'down',
-                    date: new Date().toLocaleDateString('pt-br')
-                });
-
-                this.save();
-                this.updateDisplay();
-                this.renderHistory();
-
-                descInput.value = '';
-                amtInput.value = '';
-            },
-
-            updateDisplay() {
-                const display = document.getElementById('balanceDisplay');
-                gsap.to(display, {
-                    innerText: this.saldo,
-                    duration: 1.5,
-                    snap: { innerText: 0.01 },
-                    onUpdate: () => {
-                        display.innerText = parseFloat(display.innerText).toLocaleString('pt-br', {minimumFractionDigits: 2});
-                    }
-                });
-            },
-
-            renderHistory() {
-                const list = document.getElementById('historyList');
-                if(this.historico.length === 0) {
-                    list.innerHTML = `<p style="text-align:center; opacity:0.5; padding:40px;">Nenhuma transação registrada.</p>`;
-                    return;
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
                 }
-                list.innerHTML = this.historico.map(i => `
-                    <div class="fatura-item">
-                        <div class="icon-circle" style="background:${i.type === 'up' ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)'}">
-                            ${i.type === 'up' ? 
-                                '<svg width="24" style="color:var(--success)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>' : 
-                                '<svg width="24" style="color:var(--error)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 12H4"></path></svg>'}
-                        </div>
-                        <div style="flex:1">
-                            <h4 style="font-size:1.1rem">${i.desc}</h4>
-                            <p style="font-size:0.8rem; color:var(--text-dim)">${i.date}</p>
-                        </div>
-                        <div style="color:${i.type === 'up' ? 'var(--success)' : 'var(--error)'}; font-weight:800; font-size:1.1rem">
-                            ${i.type === 'up' ? '+' : '-'} R$ ${i.amt.toLocaleString('pt-br', {minimumFractionDigits: 2})}
-                        </div>
-                    </div>
-                `).join('');
-            },
-
-            save() {
-                localStorage.setItem('n_saldo', this.saldo);
-                localStorage.setItem('n_history', JSON.stringify(this.historico));
-            },
-
-            shake() {
-                gsap.to(".input-group", { x: 10, duration: 0.1, repeat: 5, yoyo: true });
             }
-        };
+        });
 
-        window.onload = () => app.init();
+        // Lógica de Operações
+        let balance = 128450.00;
+        
+        function addOp() {
+            const name = document.getElementById('opName').value;
+            const val = parseFloat(document.getElementById('opValue').value);
+
+            if(!name || !val) return;
+
+            balance += val;
+            document.getElementById('mainBalance').innerText = balance.toLocaleString('pt-br', {minimumFractionDigits: 2});
+
+            const hist = document.getElementById('recentHistory');
+            const item = document.createElement('div');
+            item.className = 'transaction';
+            item.innerHTML = `
+                <div>
+                    <div style="font-weight:bold">${name}</div>
+                    <div style="font-size:0.7rem; color:#64748b">${new Date().toLocaleDateString()}</div>
+                </div>
+                <div style="color:var(--success); font-weight:800">+ R$ ${val.toFixed(2)}</div>
+            `;
+            hist.prepend(item);
+            
+            gsap.from(item, { x: 50, opacity: 0 });
+        }
+
+        function switchView(view) {
+            // Estética de troca de abas
+            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            gsap.from("main", { opacity: 0, duration: 0.5 });
+        }
     </script>
 </body>
 </html>
