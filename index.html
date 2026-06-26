@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexa Capital | Elite Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Nexa Capital | Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg: #020617;
-            --sidebar: #0f172a;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --surface: rgba(30, 41, 59, 0.5);
+            --card: #0f172a;
+            --primary: #6366f1;
+            --secondary: #a855f7;
             --text: #f8fafc;
-            --card-border: rgba(255, 255, 255, 0.08);
+            --text-dim: #94a3b8;
             --success: #10b981;
-            --danger: #ef4444;
+            --error: #f43f5e;
         }
 
         * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -26,325 +23,209 @@
         body { 
             background: var(--bg); 
             color: var(--text); 
-            display: flex; 
+            display: flex;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* SIDEBAR (ESTILO DESKTOP GIGANTE) */
-        nav.sidebar {
-            width: 280px;
-            background: var(--sidebar);
-            border-right: 1px solid var(--card-border);
+        /* SIDEBAR FIXA */
+        .sidebar {
+            width: 260px;
+            background: var(--card);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
-            padding: 40px 20px;
             position: fixed;
             height: 100vh;
-            z-index: 100;
         }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
 
-        .nav-links { list-style: none; flex-grow: 1; }
-        .nav-links li {
-            padding: 16px 20px;
-            margin-bottom: 8px;
-            border-radius: 14px;
+        .menu-item {
+            padding: 15px;
+            border-radius: 12px;
+            color: var(--text-dim);
             cursor: pointer;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-weight: 600;
-            color: #94a3b8;
+            gap: 12px;
             transition: 0.3s;
         }
 
-        .nav-links li.active {
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 10px 20px var(--accent-glow);
+        .menu-item.active, .menu-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
         }
 
-        /* MAIN CONTENT AREA */
-        main {
-            margin-left: 280px;
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            margin-left: 260px;
             flex: 1;
-            padding: 50px;
-            max-width: 1400px;
+            padding: 40px;
+            width: calc(100% - 260px); /* Previne que o conteúdo estique */
         }
 
-        /* HEADER GIGANTE */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .welcome-text h1 { font-size: 2.2rem; font-weight: 800; }
-
-        /* GRID DE ESTATÍSTICAS */
-        .stats-grid {
+        /* GRID GIGANTE */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 25px;
-            margin-bottom: 40px;
+            margin-top: 30px;
         }
 
-        .stat-card {
-            background: var(--surface);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            padding: 35px;
-            border-radius: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card.highlight {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-
-        .stat-card h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
-        .stat-card .value { font-size: 2.5rem; font-weight: 800; margin: 15px 0; }
-
-        /* AREA DE GRÁFICO E TRANSAÇÕES */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .chart-container {
-            background: var(--surface);
+        .card {
+            background: var(--card);
+            border-radius: 24px;
             padding: 30px;
-            border-radius: 30px;
-            border: 1px solid var(--card-border);
-            min-height: 400px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .action-panel {
-            background: var(--sidebar);
-            padding: 30px;
-            border-radius: 30px;
-            border: 1px solid var(--accent);
-        }
+        .card-full { grid-column: span 3; }
+        .card-main { grid-column: span 2; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
 
-        /* ELEMENTOS DE FORMULÁRIO GIGANTES */
+        .balance-title { font-size: 0.9rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
+        .balance-value { font-size: 3.5rem; font-weight: 800; margin: 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* INPUTS */
+        .form-group { display: flex; gap: 15px; margin-top: 20px; }
         input {
-            width: 100%;
-            padding: 20px;
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 15px;
+            flex: 1;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 18px;
+            border-radius: 14px;
             color: white;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
         }
 
         .btn {
-            width: 100%;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 18px 30px;
+            border-radius: 14px;
             border: none;
-            font-weight: 800;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
+            transition: 0.2s;
         }
-
-        .btn-primary { background: var(--accent); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:active { transform: scale(0.98); }
 
         /* LISTA DE TRANSAÇÕES */
         .history-list { margin-top: 30px; }
-        .transaction {
+        .item {
+            background: rgba(255,255,255,0.02);
+            padding: 20px;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
-            padding: 20px;
-            background: rgba(255,255,255,0.02);
-            margin-bottom: 10px;
-            border-radius: 15px;
-            align-items: center;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
         }
 
-        /* RESPONSIVIDADE (MOBILE GIGANTE) */
-        @media (max-width: 1024px) {
-            nav.sidebar {
-                width: 100%;
-                height: 80px;
-                bottom: 0;
-                top: auto;
-                flex-direction: row;
-                padding: 10px;
-                border-right: none;
-                border-top: 1px solid var(--card-border);
-            }
-            .sidebar .logo, .sidebar .nav-links li span { display: none; }
-            .nav-links { display: flex; width: 100%; justify-content: space-around; }
-            .nav-links li { margin: 0; }
-            main { margin-left: 0; padding: 20px 20px 100px; }
-            .content-grid { grid-template-columns: 1fr; }
-            .welcome-text h1 { font-size: 1.5rem; }
+        /* RESPONSIVIDADE */
+        @media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .card-main, .card-full { grid-column: span 1; }
+            .sidebar { width: 80px; padding: 20px 10px; }
+            .sidebar .logo, .sidebar span { display: none; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+            .balance-value { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVEGAÇÃO LATERAL -->
     <nav class="sidebar">
-        <div class="logo">
-            <svg width="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-            NEXA ELITE
-        </div>
-        <ul class="nav-links">
-            <li class="active" onclick="switchView('dash')">
-                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span>Dashboard</span>
-            </li>
-            <li onclick="switchView('wallet')">
-                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12a2 2 0 002 2h14v-4"></path><path d="M18 12a2 2 0 00-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
-                <span>Wallet</span>
-            </li>
-            <li onclick="switchView('invest')">
-                <svg width="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
-                <span>Investir</span>
-            </li>
-        </ul>
+        <div class="logo">NX</div>
+        <div class="menu-item active"><span>Dashboard</span></div>
+        <div class="menu-item"><span>Carteira</span></div>
+        <div class="menu-item"><span>Relatórios</span></div>
+        <div class="menu-item"><span>Configurações</span></div>
     </nav>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main>
-        <div class="top-bar">
-            <div class="welcome-text">
-                <p style="color: #64748b; font-weight: 600;">Portfólio Management</p>
-                <h1>Olá, Investidor Nexa</h1>
+    <div class="main-content">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 2rem;">Central de Rendimentos</h1>
+            <p style="color: var(--text-dim)">Bem-vindo ao seu painel administrativo.</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- CARD GIGANTE DE SALDO -->
+            <div class="card card-main">
+                <p class="balance-title">Patrimônio Líquido</p>
+                <div class="balance-value">R$ <span id="valDisplay">0,00</span></div>
+                <div style="font-weight: 600;">Status: Conta Premium Ativa</div>
             </div>
-            <div style="display: flex; gap: 15px;">
-                <div style="text-align: right">
-                    <p style="font-weight: 800">Status da Conta</p>
-                    <p style="color: var(--success); font-size: 0.8rem; font-weight: bold">VERIFICADA PREMIUM</p>
+
+            <!-- ADICIONAR RENDA -->
+            <div class="card">
+                <h3>Nova Entrada</h3>
+                <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 15px;">Adicione seus lucros aqui.</p>
+                <input type="text" id="itemName" placeholder="Origem: Ex: Vendas">
+                <input type="number" id="itemValue" placeholder="Valor R$">
+                <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="addRenda()">Lançar Rendimento</button>
+            </div>
+
+            <!-- LISTA DE HISTÓRICO -->
+            <div class="card card-full">
+                <h3>Histórico de Transações</h3>
+                <div class="history-list" id="history">
+                    <p style="color: var(--text-dim); text-align: center; padding: 20px;">Nenhuma movimentação hoje.</p>
                 </div>
             </div>
         </div>
-
-        <!-- CARDS GIGANTES -->
-        <div class="stats-grid">
-            <div class="stat-card highlight">
-                <h3>Patrimônio Total</h3>
-                <div class="value">R$ <span id="mainBalance">128.450,00</span></div>
-                <p style="font-weight: bold;">↑ 12.5% este mês</p>
-            </div>
-            <div class="stat-card">
-                <h3>Rendimento Semanal</h3>
-                <div class="value" style="color: var(--success)">+ R$ 2.140,00</div>
-                <p>Média de 2.4% ao dia</p>
-            </div>
-            <div class="stat-card">
-                <h3>Ativos em Operação</h3>
-                <div class="value">14</div>
-                <p>3 novas oportunidades</p>
-            </div>
-        </div>
-
-        <div class="content-grid">
-            <!-- COLUNA DO GRÁFICO -->
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px">Performance Analítica</h3>
-                <canvas id="mainChart"></canvas>
-            </div>
-
-            <!-- COLUNA DE AÇÃO -->
-            <div class="action-panel">
-                <h3 style="margin-bottom: 25px">Nova Operação</h3>
-                <input type="text" id="opName" placeholder="Título do Ativo/Operação">
-                <input type="number" id="opValue" placeholder="Valor R$">
-                <button class="btn btn-primary" onclick="addOp()">Executar Ordem</button>
-
-                <div class="history-list" id="recentHistory">
-                    <p style="text-align: center; color: #475569; margin-top: 20px;">Processando ordens em tempo real...</p>
-                </div>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // Lógica do Gráfico Profissional
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
-        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+        // Lógica segura sem animações infinitas para não travar o GitHub
+        let saldoAtual = parseFloat(localStorage.getItem('nexa_saldo')) || 0;
 
-        const myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
-                datasets: [{
-                    label: 'Crescimento de Patrimônio',
-                    data: [100000, 105000, 103000, 115000, 120000, 125000, 128450],
-                    fill: true,
-                    backgroundColor: gradient,
-                    borderColor: '#6366f1',
-                    borderWidth: 4,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
-                }
-            }
-        });
+        function atualizarTela() {
+            // Atualiza o saldo com formatação brasileira simples e segura
+            document.getElementById('valDisplay').innerText = saldoAtual.toLocaleString('pt-br', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            localStorage.setItem('nexa_saldo', saldoAtual);
+        }
 
-        // Lógica de Operações
-        let balance = 128450.00;
-        
-        function addOp() {
-            const name = document.getElementById('opName').value;
-            const val = parseFloat(document.getElementById('opValue').value);
+        function addRenda() {
+            const nomeInput = document.getElementById('itemName');
+            const valorInput = document.getElementById('itemValue');
+            
+            const nome = nomeInput.value;
+            const valor = parseFloat(valorInput.value);
 
-            if(!name || !val) return;
+            if (!nome || isNaN(valor)) return alert("Preencha os dados corretamente!");
 
-            balance += val;
-            document.getElementById('mainBalance').innerText = balance.toLocaleString('pt-br', {minimumFractionDigits: 2});
+            // Atualiza saldo
+            saldoAtual += valor;
+            atualizarTela();
 
-            const hist = document.getElementById('recentHistory');
-            const item = document.createElement('div');
-            item.className = 'transaction';
-            item.innerHTML = `
+            // Adiciona no histórico visual
+            const lista = document.getElementById('history');
+            
+            // Remove o texto de "vazio" se for o primeiro item
+            if (lista.innerHTML.includes("Nenhuma movimentação")) lista.innerHTML = "";
+
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
                 <div>
-                    <div style="font-weight:bold">${name}</div>
-                    <div style="font-size:0.7rem; color:#64748b">${new Date().toLocaleDateString()}</div>
+                    <strong>${nome}</strong>
+                    <div style="font-size: 0.7rem; color: var(--text-dim)">${new Date().toLocaleDateString()}</div>
                 </div>
-                <div style="color:var(--success); font-weight:800">+ R$ ${val.toFixed(2)}</div>
+                <div style="color: var(--success); font-weight: 800">+ R$ ${valor.toLocaleString('pt-br', {minimumFractionDigits: 2})}</div>
             `;
-            hist.prepend(item);
-            
-            gsap.from(item, { x: 50, opacity: 0 });
+            lista.prepend(div);
+
+            // Limpa campos
+            nomeInput.value = "";
+            valorInput.value = "";
         }
 
-        function switchView(view) {
-            // Estética de troca de abas
-            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            gsap.from("main", { opacity: 0, duration: 0.5 });
-        }
+        // Inicia o site
+        atualizarTela();
     </script>
 </body>
 </html>
