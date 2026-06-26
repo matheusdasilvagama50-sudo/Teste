@@ -3,229 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexa Capital | Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Nexa Capital | Alpha Suite</title>
+    <!-- Bibliotecas de Alta Performance -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg: #020617;
-            --card: #0f172a;
+            --bg: #030712;
+            --surface: #0f172a;
             --primary: #6366f1;
-            --secondary: #a855f7;
-            --text: #f8fafc;
-            --text-dim: #94a3b8;
+            --primary-glow: rgba(99, 102, 241, 0.4);
             --success: #10b981;
-            --error: #f43f5e;
+            --error: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
         }
 
         * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
             display: flex;
             min-height: 100vh;
         }
 
-        /* SIDEBAR FIXA */
-        .sidebar {
-            width: 260px;
-            background: var(--card);
+        /* Sidebar com SVGs */
+        nav {
+            width: 80px;
+            background: var(--surface);
             border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 40px 20px;
             display: flex;
             flex-direction: column;
-            position: fixed;
-            height: 100vh;
-        }
-
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
-
-        .menu-item {
-            padding: 15px;
-            border-radius: 12px;
-            color: var(--text-dim);
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: flex;
             align-items: center;
-            gap: 12px;
+            padding: 30px 0;
+            gap: 40px;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
             transition: 0.3s;
+            fill: var(--text-dim);
         }
 
-        .menu-item.active, .menu-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+        .nav-icon:hover { fill: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
+
+        /* Main Content */
+        main { flex: 1; padding: 40px; }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
         }
 
-        /* CONTEÚDO PRINCIPAL */
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-            width: calc(100% - 260px); /* Previne que o conteúdo estique */
-        }
-
-        /* GRID GIGANTE */
+        /* Widgets Dinâmicos */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-rows: auto auto;
+            gap: 24px;
         }
 
-        .card {
-            background: var(--card);
+        .glass-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card-full { grid-column: span 3; }
-        .card-main { grid-column: span 2; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-
-        .balance-title { font-size: 0.9rem; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
-        .balance-value { font-size: 3.5rem; font-weight: 800; margin: 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* INPUTS */
-        .form-group { display: flex; gap: 15px; margin-top: 20px; }
-        input {
-            flex: 1;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 18px;
-            border-radius: 14px;
-            color: white;
-            font-size: 1rem;
-        }
-
-        .btn {
-            padding: 18px 30px;
-            border-radius: 14px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:active { transform: scale(0.98); }
-
-        /* LISTA DE TRANSAÇÕES */
-        .history-list { margin-top: 30px; }
-        .item {
-            background: rgba(255,255,255,0.02);
-            padding: 20px;
-            border-radius: 16px;
+        .balance-hero {
+            grid-column: span 2;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.03);
+            align-items: center;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
-        /* RESPONSIVIDADE */
-        @media (max-width: 1100px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .card-main, .card-full { grid-column: span 1; }
-            .sidebar { width: 80px; padding: 20px 10px; }
-            .sidebar .logo, .sidebar span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
-            .balance-value { font-size: 2.2rem; }
+        .stat-value { font-size: 3rem; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
+        .stat-label { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
+
+        /* Form Estilizado */
+        .trans-input {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 15px;
         }
+
+        .btn-prime {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px var(--primary-glow);
+        }
+
+        /* Lista de Transações Premium */
+        .transaction-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+        .t-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .t-info h4 { font-size: 0.9rem; }
+        .t-info span { font-size: 0.75rem; color: var(--text-dim); }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .b-up { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .b-down { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="logo">NX</div>
-        <div class="menu-item active"><span>Dashboard</span></div>
-        <div class="menu-item"><span>Carteira</span></div>
-        <div class="menu-item"><span>Relatórios</span></div>
-        <div class="menu-item"><span>Configurações</span></div>
+    <nav>
+        <!-- Logo SVG -->
+        <svg class="nav-icon" viewBox="0 0 24 24" style="fill: var(--primary); margin-bottom: 20px;">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"></path></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"></path></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>
     </nav>
 
-    <div class="main-content">
-        <header style="margin-bottom: 40px;">
-            <h1 style="font-size: 2rem;">Central de Rendimentos</h1>
-            <p style="color: var(--text-dim)">Bem-vindo ao seu painel administrativo.</p>
-        </header>
+    <main>
+        <div class="header-section">
+            <div>
+                <h1 id="welcomeText">Dashboard Alpha</h1>
+                <p style="color: var(--text-dim)">Gerenciamento de capital em tempo real</p>
+            </div>
+            <div style="text-align: right">
+                <p id="currentDate" style="font-weight: 600;"></p>
+                <span class="badge b-up">Sistema Online</span>
+            </div>
+        </div>
 
         <div class="dashboard-grid">
-            <!-- CARD GIGANTE DE SALDO -->
-            <div class="card card-main">
-                <p class="balance-title">Patrimônio Líquido</p>
-                <div class="balance-value">R$ <span id="valDisplay">0,00</span></div>
-                <div style="font-weight: 600;">Status: Conta Premium Ativa</div>
+            <!-- Balanço Principal -->
+            <div class="glass-card balance-hero">
+                <div>
+                    <p class="stat-label">Patrimônio Líquido Total</p>
+                    <div class="stat-value">R$ <span id="totalBalance">0,00</span></div>
+                    <p style="color: var(--success); font-size: 0.8rem;">↑ 12.5% em relação ao mês anterior</p>
+                </div>
+                <div style="width: 200px; height: 100px;">
+                    <canvas id="miniChart"></canvas>
+                </div>
             </div>
 
-            <!-- ADICIONAR RENDA -->
-            <div class="card">
-                <h3>Nova Entrada</h3>
-                <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 15px;">Adicione seus lucros aqui.</p>
-                <input type="text" id="itemName" placeholder="Origem: Ex: Vendas">
-                <input type="number" id="itemValue" placeholder="Valor R$">
-                <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="addRenda()">Lançar Rendimento</button>
+            <!-- Formulário -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 20px;">Nova Operação</h3>
+                <input type="text" id="desc" class="trans-input" placeholder="Título da transação">
+                <input type="number" id="amt" class="trans-input" placeholder="Valor R$">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-prime" onclick="app.add(true)" style="background: var(--success)">RECEITA</button>
+                    <button class="btn-prime" onclick="app.add(false)" style="background: var(--error)">DESPESA</button>
+                </div>
             </div>
 
-            <!-- LISTA DE HISTÓRICO -->
-            <div class="card card-full">
-                <h3>Histórico de Transações</h3>
-                <div class="history-list" id="history">
-                    <p style="color: var(--text-dim); text-align: center; padding: 20px;">Nenhuma movimentação hoje.</p>
+            <!-- Gráfico de Pizza -->
+            <div class="glass-card" style="grid-row: span 1;">
+                <h3 style="margin-bottom: 15px;">Alocação</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+
+            <!-- Lista Extrato -->
+            <div class="glass-card" style="grid-column: span 2;">
+                <h3>Atividade Recente</h3>
+                <div id="list" class="transaction-list">
+                    <!-- Dinâmico -->
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // Lógica segura sem animações infinitas para não travar o GitHub
-        let saldoAtual = parseFloat(localStorage.getItem('nexa_saldo')) || 0;
-
-        function atualizarTela() {
-            // Atualiza o saldo com formatação brasileira simples e segura
-            document.getElementById('valDisplay').innerText = saldoAtual.toLocaleString('pt-br', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-            localStorage.setItem('nexa_saldo', saldoAtual);
-        }
-
-        function addRenda() {
-            const nomeInput = document.getElementById('itemName');
-            const valorInput = document.getElementById('itemValue');
+        const app = {
+            balance: parseFloat(localStorage.getItem('alpha_bal')) || 0,
+            log: JSON.parse(localStorage.getItem('alpha_log')) || [],
             
-            const nome = nomeInput.value;
-            const valor = parseFloat(valorInput.value);
+            init() {
+                document.getElementById('currentDate').innerText = new Date().toLocaleDateString('pt-br', {day:'numeric', month:'long'});
+                this.updateUI();
+                this.initCharts();
+                this.animateIn();
+            },
 
-            if (!nome || isNaN(valor)) return alert("Preencha os dados corretamente!");
+            animateIn() {
+                gsap.from(".glass-card", {
+                    y: 30, opacity: 0, duration: 0.8, stagger: 0.15, ease: "back.out(1.7)"
+                });
+            },
 
-            // Atualiza saldo
-            saldoAtual += valor;
-            atualizarTela();
+            add(isRevenue) {
+                const d = document.getElementById('desc').value;
+                const v = parseFloat(document.getElementById('amt').value);
 
-            // Adiciona no histórico visual
-            const lista = document.getElementById('history');
-            
-            // Remove o texto de "vazio" se for o primeiro item
-            if (lista.innerHTML.includes("Nenhuma movimentação")) lista.innerHTML = "";
+                if(!d || isNaN(v)) return gsap.to("main", {x: 10, repeat:3, yoyo:true, duration:0.05});
 
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.innerHTML = `
-                <div>
-                    <strong>${nome}</strong>
-                    <div style="font-size: 0.7rem; color: var(--text-dim)">${new Date().toLocaleDateString()}</div>
-                </div>
-                <div style="color: var(--success); font-weight: 800">+ R$ ${valor.toLocaleString('pt-br', {minimumFractionDigits: 2})}</div>
-            `;
-            lista.prepend(div);
+                const amount = isRevenue ? v : -v;
+                this.balance += amount;
+                
+                this.log.unshift({
+                    id: Date.now(),
+                    desc: d,
+                    val: v,
+                    type: isRevenue ? 'up' : 'down',
+                    time: new Date().toLocaleTimeString('pt-br', {hour:'2-digit', minute:'2-digit'})
+                });
 
-            // Limpa campos
-            nomeInput.value = "";
-            valorInput.value = "";
-        }
+                this.save();
+                this.updateUI();
+                this.updateCharts();
+                
+                document.getElementById('desc').value = '';
+                document.getElementById('amt').value = '';
+            },
 
-        // Inicia o site
-        atualizarTela();
+            updateUI() {
+                const el = document.getElementById('totalBalance');
+                gsap.to(el, {
+                    innerText: this.balance,
+                    duration: 1,
+                    snap: { innerText: 1 },
+                    onUpdate: () => el.innerText = parseFloat(el.innerText).toLocaleString('pt-br', {minimumFractionDigits: 2})
+                });
+
+                document.getElementById('list').innerHTML = this.log.map(i => `
+                    <div class="t-item">
+                        <div class="t-info">
+                            <h4>${i.desc}</h4>
+                            <span>${i.time}</span>
+                        </div>
+                        <div class="badge ${i.type === 'up' ? 'b-up' : 'b-down'}">
+                            ${i.type === 'up' ? '+' : '-'} R$ ${i.val.toLocaleString('pt-br')}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            save() {
+                localStorage.setItem('alpha_bal', this.balance);
+                localStorage.setItem('alpha_log', JSON.stringify(this.log));
+            },
+
+            initCharts() {
+                // Gráfico de Pizza
+                const ctxPie = document.getElementById('pieChart').getContext('2d');
+                this.pie = new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Entradas', 'Saídas'],
+                        datasets: [{
+                            data: [1, 1],
+                            backgroundColor: ['#10b981', '#ef4444'],
+                            borderWidth: 0,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: { 
+                        cutout: '80%',
+                        plugins: { legend: { position: 'bottom', labels: {color: '#94a3b8', font: {size: 10}} } } 
+                    }
+                });
+
+                // Mini gráfico de linha
+                const ctxLines = document.getElementById('miniChart').getContext('2d');
+                this.lines = new Chart(ctxLines, {
+                    type: 'line',
+                    data: {
+                        labels: [1,2,3,4,5,6],
+                        datasets: [{
+                            data: [30, 45, 35, 60, 50, 70],
+                            borderColor: '#6366f1',
+                            tension: 0.4,
+                            pointRadius: 0,
+                            fill: true,
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)'
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: {display: false} },
+                        scales: { x: {display: false}, y: {display: false} }
+                    }
+                });
+                this.updateCharts();
+            },
+
+            updateCharts() {
+                const up = this.log.filter(i => i.type === 'up').reduce((a, b) => a + b.val, 0);
+                const down = this.log.filter(i => i.type === 'down').reduce((a, b) => a + b.val, 0);
+                
+                this.pie.data.datasets[0].data = [up || 1, down || 1];
+                this.pie.update();
+            }
+        };
+
+        window.onload = () => app.init();
     </script>
 </body>
-</html>
+    </html>
