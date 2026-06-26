@@ -2,329 +2,273 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexa Capital | Alpha Suite</title>
-    <!-- Bibliotecas de Alta Performance -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexa Capital Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg: #030712;
-            --surface: #0f172a;
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.4);
+            --surface: #111827;
+            --primary: #8b5cf6;
+            --secondary: #d946ef;
             --success: #10b981;
-            --error: #ef4444;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --error: #f43f5e;
+            --text: #f8fafc;
         }
 
-        * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { margin:0; padding:0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            overflow-x: hidden;
-            display: flex;
-            min-height: 100vh;
-        }
+        /* HEADER */
+        header { padding: 30px 20px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .user-info h2 { font-size: 1.2rem; font-weight: 800; }
+        .user-info p { font-size: 0.8rem; color: #94a3b8; }
 
-        /* Sidebar com SVGs */
-        nav {
-            width: 80px;
-            background: var(--surface);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 0;
-            gap: 40px;
-        }
+        /* CONTAINER PRINCIPAL */
+        .app-container { padding: 0 20px 100px; max-width: 500px; margin: 0 auto; }
 
-        .nav-icon {
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            transition: 0.3s;
-            fill: var(--text-dim);
-        }
-
-        .nav-icon:hover { fill: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
-
-        /* Main Content */
-        main { flex: 1; padding: 40px; }
-
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        /* Widgets Dinâmicos */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: auto auto;
-            gap: 24px;
-        }
-
-        .glass-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 24px;
+        /* CARD DE SALDO */
+        .main-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
             position: relative;
             overflow: hidden;
         }
-
-        .balance-hero {
-            grid-column: span 2;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+        .main-card::before {
+            content: ""; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
+            background: rgba(255,255,255,0.1); border-radius: 50%;
         }
 
-        .stat-value { font-size: 3rem; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
-        .stat-label { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
+        /* SEÇÕES (Abas) */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        /* Form Estilizado */
-        .trans-input {
-            width: 100%;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 14px;
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 15px;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn-prime {
-            width: 100%;
+        /* GRID DE FATURAS */
+        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .fatura-list { display: flex; flex-direction: column; gap: 12px; }
+        .fatura-item {
+            background: var(--surface);
             padding: 16px;
-            border-radius: 12px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 10px 20px -5px var(--primary-glow);
-        }
-
-        /* Lista de Transações Premium */
-        .transaction-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
-        .t-item {
+            border-radius: 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--primary);
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .fatura-icon { 
+            width: 45px; height: 45px; background: rgba(255,255,255,0.05); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
         }
 
-        .t-info h4 { font-size: 0.9rem; }
-        .t-info span { font-size: 0.75rem; color: var(--text-dim); }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: bold;
+        /* BARRA DE NAVEGAÇÃO SUPERIOR (ABAS) */
+        .nav-tabs {
+            display: flex; background: var(--surface); border-radius: 15px; padding: 5px; margin-bottom: 25px;
         }
-        .b-up { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .b-down { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .nav-tabs button {
+            flex: 1; border: none; background: transparent; color: #94a3b8; padding: 10px;
+            border-radius: 12px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: 0.3s;
+        }
+        .nav-tabs button.active { background: #1f2937; color: white; }
+
+        /* INPUTS */
+        .input-group { background: var(--surface); padding: 20px; border-radius: 24px; margin-top: 15px; }
+        input {
+            width: 100%; background: #1f2937; border: none; padding: 15px; 
+            border-radius: 12px; color: white; margin-bottom: 10px; font-size: 1rem;
+        }
+
+        .btn-action {
+            width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold;
+            color: white; cursor: pointer; margin-top: 5px;
+        }
+
+        /* NAVIGATION BAR FIXA */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px); display: flex; justify-content: space-around;
+            padding: 15px 0 30px; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #64748b; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
 
     </style>
 </head>
 <body>
 
-    <nav>
-        <!-- Logo SVG -->
-        <svg class="nav-icon" viewBox="0 0 24 24" style="fill: var(--primary); margin-bottom: 20px;">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-        </svg>
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"></path></svg>
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"></path></svg>
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>
-    </nav>
+    <header>
+        <div class="user-info">
+            <p>Bem-vindo,</p>
+            <h2 id="userName">Usuário Nexa</h2>
+        </div>
+        <div style="width: 45px; height: 45px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; fill: var(--primary);" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+    </header>
 
-    <main>
-        <div class="header-section">
-            <div>
-                <h1 id="welcomeText">Dashboard Alpha</h1>
-                <p style="color: var(--text-dim)">Gerenciamento de capital em tempo real</p>
-            </div>
-            <div style="text-align: right">
-                <p id="currentDate" style="font-weight: 600;"></p>
-                <span class="badge b-up">Sistema Online</span>
-            </div>
+    <div class="app-container">
+        
+        <!-- ABAS DE NAVEGAÇÃO -->
+        <div class="nav-tabs">
+            <button class="active" onclick="app.switchTab('resumo', this)">Resumo</button>
+            <button onclick="app.switchTab('transacoes', this)">Transações</button>
+            <button onclick="app.switchTab('faturas', this)">Faturas</button>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Balanço Principal -->
-            <div class="glass-card balance-hero">
-                <div>
-                    <p class="stat-label">Patrimônio Líquido Total</p>
-                    <div class="stat-value">R$ <span id="totalBalance">0,00</span></div>
-                    <p style="color: var(--success); font-size: 0.8rem;">↑ 12.5% em relação ao mês anterior</p>
-                </div>
-                <div style="width: 200px; height: 100px;">
-                    <canvas id="miniChart"></canvas>
+        <!-- SEÇÃO 1: RESUMO -->
+        <section id="resumo" class="view-section active">
+            <div class="main-card">
+                <p style="opacity: 0.8; font-size: 0.9rem;">Saldo Total</p>
+                <div style="font-size: 2.2rem; font-weight: 800; margin: 5px 0;">R$ <span id="balanceDisplay">0,00</span></div>
+                <div style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 0.7rem;">
+                    Nexa Premium Gold
                 </div>
             </div>
 
-            <!-- Formulário -->
-            <div class="glass-card">
-                <h3 style="margin-bottom: 20px;">Nova Operação</h3>
-                <input type="text" id="desc" class="trans-input" placeholder="Título da transação">
-                <input type="number" id="amt" class="trans-input" placeholder="Valor R$">
+            <div class="section-title">Ações Rápidas</div>
+            <div class="input-group">
+                <input type="text" id="desc" placeholder="Ex: Salário, Netflix...">
+                <input type="number" id="amt" placeholder="R$ 0,00">
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-prime" onclick="app.add(true)" style="background: var(--success)">RECEITA</button>
-                    <button class="btn-prime" onclick="app.add(false)" style="background: var(--error)">DESPESA</button>
+                    <button class="btn-action" style="background: var(--success);" onclick="app.handleAction(true)">+ Receber</button>
+                    <button class="btn-action" style="background: var(--error);" onclick="app.handleAction(false)">- Pagar</button>
                 </div>
             </div>
+        </section>
 
-            <!-- Gráfico de Pizza -->
-            <div class="glass-card" style="grid-row: span 1;">
-                <h3 style="margin-bottom: 15px;">Alocação</h3>
-                <canvas id="pieChart"></canvas>
+        <!-- SEÇÃO 2: TRANSAÇÕES -->
+        <section id="transacoes" class="view-section">
+            <div class="section-title">Histórico</div>
+            <div id="historyList" class="fatura-list">
+                <!-- Dinâmico -->
             </div>
+        </section>
 
-            <!-- Lista Extrato -->
-            <div class="glass-card" style="grid-column: span 2;">
-                <h3>Atividade Recente</h3>
-                <div id="list" class="transaction-list">
-                    <!-- Dinâmico -->
+        <!-- SEÇÃO 3: FATURAS -->
+        <section id="faturas" class="view-section">
+            <div class="section-title">Faturas Pendentes</div>
+            <div class="fatura-list" id="pendingBills">
+                <!-- Faturas pré-setadas para exemplo profissional -->
+                <div class="fatura-item">
+                    <div class="fatura-icon">⚡</div>
+                    <div style="flex:1"><h4>Conta de Luz</h4><p style="font-size:0.7rem; color:#94a3b8">Vence em 5 dias</p></div>
+                    <div style="color:var(--error); font-weight:800">R$ 180,00</div>
+                </div>
+                <div class="fatura-item">
+                    <div class="fatura-icon">🌐</div>
+                    <div style="flex:1"><h4>Internet Fibra</h4><p style="font-size:0.7rem; color:#94a3b8">Vence em 12 dias</p></div>
+                    <div style="color:var(--error); font-weight:800">R$ 99,90</div>
                 </div>
             </div>
+        </section>
+    </div>
+
+    <!-- NAVBAR INFERIOR -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span style="font-size: 0.6rem;">Início</span>
         </div>
-    </main>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span style="font-size: 0.6rem;">Extrato</span>
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span style="font-size: 0.6rem;">Info</span>
+        </div>
+    </div>
 
     <script>
         const app = {
-            balance: parseFloat(localStorage.getItem('alpha_bal')) || 0,
-            log: JSON.parse(localStorage.getItem('alpha_log')) || [],
-            
+            saldo: parseFloat(localStorage.getItem('n_saldo')) || 0,
+            historico: JSON.parse(localStorage.getItem('n_history')) || [],
+
             init() {
-                document.getElementById('currentDate').innerText = new Date().toLocaleDateString('pt-br', {day:'numeric', month:'long'});
-                this.updateUI();
-                this.initCharts();
-                this.animateIn();
-            },
-
-            animateIn() {
-                gsap.from(".glass-card", {
-                    y: 30, opacity: 0, duration: 0.8, stagger: 0.15, ease: "back.out(1.7)"
-                });
-            },
-
-            add(isRevenue) {
-                const d = document.getElementById('desc').value;
-                const v = parseFloat(document.getElementById('amt').value);
-
-                if(!d || isNaN(v)) return gsap.to("main", {x: 10, repeat:3, yoyo:true, duration:0.05});
-
-                const amount = isRevenue ? v : -v;
-                this.balance += amount;
+                this.updateDisplay();
+                this.renderHistory();
                 
-                this.log.unshift({
+                // Animação inicial
+                gsap.from(".main-card", { scale: 0.8, opacity: 0, duration: 0.8, ease: "back.out" });
+            },
+
+            switchTab(targetId, btn) {
+                // Remove active de todos
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+                
+                // Ativa a correta
+                document.getElementById(targetId).classList.add('active');
+                btn.classList.add('active');
+                
+                gsap.from(`#${targetId}`, { y: 20, opacity: 0, duration: 0.3 });
+            },
+
+            handleAction(isAdding) {
+                const desc = document.getElementById('desc').value;
+                const amt = parseFloat(document.getElementById('amt').value);
+
+                if(!desc || isNaN(amt)) return this.shake();
+
+                this.saldo += isAdding ? amt : -amt;
+                this.historico.unshift({
                     id: Date.now(),
-                    desc: d,
-                    val: v,
-                    type: isRevenue ? 'up' : 'down',
-                    time: new Date().toLocaleTimeString('pt-br', {hour:'2-digit', minute:'2-digit'})
+                    desc,
+                    amt,
+                    type: isAdding ? 'up' : 'down',
+                    date: new Date().toLocaleTimeString('pt-br', {hour:'2-digit', minute:'2-digit'})
                 });
 
                 this.save();
-                this.updateUI();
-                this.updateCharts();
-                
+                this.updateDisplay();
+                this.renderHistory();
+
                 document.getElementById('desc').value = '';
                 document.getElementById('amt').value = '';
             },
 
-            updateUI() {
-                const el = document.getElementById('totalBalance');
-                gsap.to(el, {
-                    innerText: this.balance,
+            updateDisplay() {
+                const display = document.getElementById('balanceDisplay');
+                gsap.to(display, {
+                    innerText: this.saldo,
                     duration: 1,
-                    snap: { innerText: 1 },
-                    onUpdate: () => el.innerText = parseFloat(el.innerText).toLocaleString('pt-br', {minimumFractionDigits: 2})
+                    snap: { innerText: 0.01 },
+                    onUpdate: () => display.innerText = parseFloat(display.innerText).toLocaleString('pt-br', {minimumFractionDigits: 2})
                 });
+            },
 
-                document.getElementById('list').innerHTML = this.log.map(i => `
-                    <div class="t-item">
-                        <div class="t-info">
-                            <h4>${i.desc}</h4>
-                            <span>${i.time}</span>
-                        </div>
-                        <div class="badge ${i.type === 'up' ? 'b-up' : 'b-down'}">
-                            ${i.type === 'up' ? '+' : '-'} R$ ${i.val.toLocaleString('pt-br')}
+            renderHistory() {
+                const list = document.getElementById('historyList');
+                if(this.historico.length === 0) {
+                    list.innerHTML = `<p style="text-align:center; opacity:0.5; margin-top:20px;">Nenhuma movimentação</p>`;
+                    return;
+                }
+                list.innerHTML = this.historico.map(i => `
+                    <div class="fatura-item">
+                        <div class="fatura-icon">${i.type === 'up' ? '💰' : '💸' }</div>
+                        <div style="flex:1"><h4>${i.desc}</h4><p style="font-size:0.7rem; color:#94a3b8">${i.date}</p></div>
+                        <div style="color:${i.type === 'up' ? 'var(--success)' : 'var(--error)'}; font-weight:800">
+                            ${i.type === 'up' ? '+' : '-'} R$ ${i.amt.toLocaleString('pt-br', {minimumFractionDigits: 2})}
                         </div>
                     </div>
                 `).join('');
             },
 
             save() {
-                localStorage.setItem('alpha_bal', this.balance);
-                localStorage.setItem('alpha_log', JSON.stringify(this.log));
+                localStorage.setItem('n_saldo', this.saldo);
+                localStorage.setItem('n_history', JSON.stringify(this.historico));
             },
 
-            initCharts() {
-                // Gráfico de Pizza
-                const ctxPie = document.getElementById('pieChart').getContext('2d');
-                this.pie = new Chart(ctxPie, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Entradas', 'Saídas'],
-                        datasets: [{
-                            data: [1, 1],
-                            backgroundColor: ['#10b981', '#ef4444'],
-                            borderWidth: 0,
-                            hoverOffset: 10
-                        }]
-                    },
-                    options: { 
-                        cutout: '80%',
-                        plugins: { legend: { position: 'bottom', labels: {color: '#94a3b8', font: {size: 10}} } } 
-                    }
-                });
-
-                // Mini gráfico de linha
-                const ctxLines = document.getElementById('miniChart').getContext('2d');
-                this.lines = new Chart(ctxLines, {
-                    type: 'line',
-                    data: {
-                        labels: [1,2,3,4,5,6],
-                        datasets: [{
-                            data: [30, 45, 35, 60, 50, 70],
-                            borderColor: '#6366f1',
-                            tension: 0.4,
-                            pointRadius: 0,
-                            fill: true,
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)'
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: {display: false} },
-                        scales: { x: {display: false}, y: {display: false} }
-                    }
-                });
-                this.updateCharts();
-            },
-
-            updateCharts() {
-                const up = this.log.filter(i => i.type === 'up').reduce((a, b) => a + b.val, 0);
-                const down = this.log.filter(i => i.type === 'down').reduce((a, b) => a + b.val, 0);
-                
-                this.pie.data.datasets[0].data = [up || 1, down || 1];
-                this.pie.update();
+            shake() {
+                gsap.to(".input-group", { x: 10, duration: 0.1, repeat: 3, yoyo: true });
             }
         };
 
